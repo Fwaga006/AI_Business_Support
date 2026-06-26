@@ -13,7 +13,7 @@ db.init_app(app)
 
 @app.route("/")
 def home():
-    return "AI Business Support System Running"
+    return send_file("index.html")
 
 @app.route("/register-page")
 def register_page():
