@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AI Customer Support</title>
+</head>
+
+<body>
+
+<h2>AI Business Support Chat</h2>
+
+<div id="chat"></div>
+
+<br>
+
+<input id="question" placeholder="Ask your question">
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+
+<script>
+
+async function sendMessage(){
+
+let question = document.getElementById("question").value;
+
+
+let response = await fetch("/chat/1", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body: JSON.stringify({
+question: question
+})
+
+});
+
+
+let result = await response.json();
+
+
+document.getElementById("chat").innerHTML += 
+"<p><b>You:</b> " + question + "</p>" +
+"<p><b>AI:</b> " + result.answer + "</p>";
+
+
+document.getElementById("question").value="";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

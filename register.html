@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Business Registration</title>
+</head>
+
+<body>
+
+<h2>Create Business Account</h2>
+
+<form id="registerForm">
+
+<input id="business_name" placeholder="Business name"><br><br>
+
+<input id="email" placeholder="Email"><br><br>
+
+<input id="password" placeholder="Password"><br><br>
+
+<textarea id="information" placeholder="Tell us about your business"></textarea>
+<br><br>
+
+<button type="submit">Register</button>
+
+</form>
+
+
+<script>
+
+document.getElementById("registerForm").onsubmit = async function(e){
+
+e.preventDefault();
+
+
+let data = {
+
+business_name: document.getElementById("business_name").value,
+
+email: document.getElementById("email").value,
+
+password: document.getElementById("password").value,
+
+information: document.getElementById("information").value
+
+};
+
+
+let response = await fetch("/register", {
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body: JSON.stringify(data)
+
+});
+
+
+let result = await response.json();
+
+alert(result.message);
+
+}
+
+</script>
+
+
+</body>
+</html>

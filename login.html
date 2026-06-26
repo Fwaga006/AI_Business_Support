@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Business Login</title>
+</head>
+
+<body>
+
+<h2>Business Login</h2>
+
+<input id="email" placeholder="Email">
+
+<input id="password" placeholder="Password" type="password">
+
+<button onclick="login()">Login</button>
+
+
+<script>
+
+async function login(){
+
+let response = await fetch("/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:document.getElementById("email").value,
+
+password:document.getElementById("password").value
+
+})
+
+});
+
+
+let result = await response.json();
+
+
+if(result.id){
+
+window.location =
+"/dashboard/" + result.id;
+
+}else{
+
+alert(result.message);
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

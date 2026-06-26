@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Business Dashboard</title>
+</head>
+
+<body>
+
+<h2 id="businessName">Business Dashboard</h2>
+
+<h3 id="name"></h3>
+
+<p>Your chatbot link:</p>
+
+<a id="chatLink"></a>
+<h3 id="stats">Total Chats: 0</h3>
+<div id="chats"></div>
+
+<script>
+async function loadChats(){
+
+let response = await fetch(
+"/history/" + businessId
+);
+
+let chats = await response.json();
+
+let output = "";
+
+chats.forEach(chat => {
+
+output +=
+"<p><b>Time:</b> " + chat.time + "</p>" +
+"<p><b>You:</b> " + chat.customer + "</p>" +
+"<p><b>AI:</b> " + chat.ai + "</p><hr>";
+
+});
+
+document.getElementById("chats").innerHTML = output;
+
+}
+
+loadChats();
+
+let businessId = 1;
+
+
+document.getElementById("chatLink").innerHTML =
+"http://127.0.0.1:5000/chat-page/"+ businessId;
+
+
+document.getElementById("chatLink").href =
+"/chat-page/"+ businessId;
+async function loadBusiness(){
+
+    let response = await fetch(
+        "/business/" + businessId
+    );
+
+    let data = await response.json();
+
+    document.getElementById("businessName").innerHTML =
+    data.name + " Dashboard";
+
+}
+
+loadBusiness();
+async function loadStats(){
+
+let response = await fetch(
+"/stats/" + businessId
+);
+
+let data = await response.json();
+
+document.getElementById("stats").innerHTML =
+"Total Chats: " + data.total_chats;
+
+}
+
+loadStats();
+
+
+</script>
+
+
+</body>
+
+</html>
