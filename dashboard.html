@@ -6,6 +6,7 @@
 </head>
 
 <body>
+<button onclick="logout()">Logout</button>
 
 <h2 id="businessName">Business Dashboard</h2>
 
@@ -80,6 +81,11 @@ document.getElementById("stats").innerHTML =
 }
 
 loadStats();
+function logout(){
+
+    window.location = "/logout";
+
+}
 
 
 </script>

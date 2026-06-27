@@ -1,10 +1,11 @@
 import os
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, session
 from models import db,Business,ChatMessage
 from werkzeug.security import generate_password_hash,check_password_hash
 from ai_assistant import get_ai_response
 
 app = Flask(__name__)
+app.secret_key = "L9@fK82#xP!mZ7qR$2026_secure_key"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///business.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -41,6 +42,10 @@ def chat_page(business_id):
     return send_file("chat.html")
 @app.route("/dashboard/<int:business_id>")
 def dashboard(business_id):
+
+    if session.get("business_id") != business_id:
+        return "Unauthorized", 403
+
     return send_file("dashboard.html")
 @app.route("/business/<int:business_id>")
 def business_info(business_id):
@@ -54,25 +59,38 @@ def business_info(business_id):
 def login_page():
     return send_file("login.html")
     
-
 @app.route("/login", methods=["POST"])
 def login():
 
     data = request.json
 
     business = Business.query.filter_by(
-        email=data["email"],
-        password=data["password"]
+        email=data["email"]
     ).first()
 
-    if business:
+    if business is None:
+        return jsonify({
+            "message": "Email not found"
+        })
+
+    if check_password_hash(business.password, data["password"]):
+        session["business_id"] = business.id
+        print("Logged in as business ID:", business.id)
+
         return jsonify({
             "id": business.id
         })
 
     return jsonify({
-        "message": "Invalid login details"
+        "message": "Incorrect password"
     })
+@app.route("/logout")
+def logout():
+
+    session.pop("business_id", None)
+
+    return send_file("login.html")
+
 @app.route("/history/<int:business_id>")
 def history(business_id):
 
@@ -126,6 +144,19 @@ def chat(business_id):
     return jsonify({
         "answer": answer
     })
+@app.route("/businesses")
+def businesses():
+
+    all_businesses = Business.query.all()
+
+    return jsonify([
+        {
+            "id": business.id,
+            "name": business.business_name,
+            "email": business.email
+        }
+        for business in all_businesses
+    ])
 
 with app.app_context():
     db.create_all()
