@@ -3,9 +3,45 @@
 
 <head>
 <title>Business Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:#f4f6f9;
+margin:0;
+}
+
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:8px;
+}
+
+.container{
+padding:30px;
+}
+
+input{
+padding:10px;
+border-radius:6px;
+}
+
+#chats p{
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 8px #ddd;
+}
+
+</style>
+
 </head>
 
 <body>
+<div class="container">
 <button onclick="logout()">Logout</button>
 
 <h2 id="businessName">Business Dashboard</h2>
@@ -16,7 +52,23 @@
 
 <a id="chatLink"></a>
 <h3 id="stats">Total Chats: 0</h3>
+<h3>Edit Business Information</h3>
+
+<form id="editForm">
+
+<input id="editName" placeholder="Business name">
+
+<br><br>
+
+<input id="editEmail" placeholder="Business email">
+
+<br><br>
+
+<button type="submit">Save Changes</button>
+
+</form>
 <div id="chats"></div>
+</div>
 
 <script>
 async function loadChats(){
@@ -86,6 +138,53 @@ function logout(){
     window.location = "/logout";
 
 }
+async function loadBusinessDetails(){
+
+let response = await fetch(
+"/business/" + businessId
+);
+
+let data = await response.json();
+
+document.getElementById("editName").value = data.name;
+document.getElementById("editEmail").value = data.email;
+
+}
+
+
+document.getElementById("editForm").onsubmit = async function(e){
+
+e.preventDefault();
+
+
+let response = await fetch(
+"/business/edit/" + businessId,
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+
+name: document.getElementById("editName").value,
+
+email: document.getElementById("editEmail").value
+
+})
+
+});
+
+
+let result = await response.json();
+
+alert(result.message);
+
+loadBusiness();
+
+}
+
+
+loadBusinessDetails();
 
 
 </script>
