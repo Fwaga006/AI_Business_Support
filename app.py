@@ -47,6 +47,26 @@ def dashboard(business_id):
         return redirect("/login-page")
 
     return send_file("dashboard.html")
+@app.route("/business/edit/<int:business_id>", methods=["POST"])
+def edit_business(business_id):
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    business = Business.query.filter_by(
+        id=business_id,
+        user_id=session["user_id"]
+    ).first()
+
+    if not business:
+        return "Not allowed", 403
+
+    business.name = request.form["name"]
+    business.email = request.form["email"]
+
+    db.session.commit()
+
+    return redirect("/dashboard")
 @app.route("/business/<int:business_id>")
 def business_info(business_id):
 
