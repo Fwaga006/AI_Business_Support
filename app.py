@@ -7,7 +7,9 @@ from ai_assistant import get_ai_response
 app = Flask(__name__)
 app.secret_key = "L9@fK82#xP!mZ7qR$2026_secure_key"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///business.db"
+import os
+
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
