@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, send_file, session
+from flask import Flask, request, jsonify, send_file, session, redirect
 from models import db,Business,ChatMessage
 from werkzeug.security import generate_password_hash,check_password_hash
 from ai_assistant import get_ai_response
@@ -43,8 +43,8 @@ def chat_page(business_id):
 @app.route("/dashboard/<int:business_id>")
 def dashboard(business_id):
 
-    if session.get("business_id") != business_id:
-        return "Unauthorized", 403
+    if "business_id" not in session:
+        return redirect("/login-page")
 
     return send_file("dashboard.html")
 @app.route("/business/<int:business_id>")
@@ -94,15 +94,19 @@ def logout():
 @app.route("/history/<int:business_id>")
 def history(business_id):
 
+    if "user_id" not in session:
+        return jsonify({"error": "Login required"}), 401
+
     chats = ChatMessage.query.filter_by(
-        business_id=business_id
+        business_id=business_id,
+        user_id=session["user_id"]
     ).all()
 
     return jsonify([
         {
             "customer": chat.customer_message,
             "ai": chat.ai_response,
-            "time":chat.created_at
+            "time": chat.created_at
         }
         for chat in chats
     ])
